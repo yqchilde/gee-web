@@ -31,17 +31,17 @@ func newContext(w http.ResponseWriter, r *http.Request) *Context {
 	}
 }
 
+func (c *Context) Param(key string) string {
+	value, _ := c.Params[key]
+	return value
+}
+
 func (c *Context) PostForm(key string) string {
 	return c.Req.FormValue(key)
 }
 
 func (c *Context) Query(key string) string {
 	return c.Req.URL.Query().Get(key)
-}
-
-func (c *Context) Param(key string) string {
-	value, _ := c.Params[key]
-	return value
 }
 
 func (c *Context) Status(code int) {
@@ -53,10 +53,10 @@ func (c *Context) SetHeader(key string, val string) {
 	c.Writer.Header().Set(key, val)
 }
 
-func (c *Context) String(code int, format string, value ...interface{}) {
+func (c *Context) String(code int, format string, values ...interface{}) {
 	c.SetHeader("Content-Type", "text/plain")
 	c.Status(code)
-	c.Writer.Write([]byte(fmt.Sprintf(format, value...)))
+	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
 }
 
 func (c *Context) JSON(code int, obj interface{}) {

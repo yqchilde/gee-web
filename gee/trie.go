@@ -1,6 +1,9 @@
 package gee
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type node struct {
 	pattern  string  // 待匹配路由，例如：/p/:lang
@@ -9,25 +12,8 @@ type node struct {
 	isWild   bool    // 是否精确匹配，part含有 : 或 * 时为true
 }
 
-// 第一个匹配成功的节点，用于插入
-func (n *node) matchChild(part string) *node {
-	for _, child := range n.children {
-		if child.part == part || child.isWild {
-			return child
-		}
-	}
-	return nil
-}
-
-// 所有匹配成功的节点，用于查找
-func (n *node) matchChildren(part string) []*node {
-	nodes := make([]*node, 0)
-	for _, child := range n.children {
-		if child.part == part || child.isWild {
-			nodes = append(nodes, child)
-		}
-	}
-	return nodes
+func (n *node) String() string {
+	return fmt.Sprintf("node{pattern=%s, part=%s, isWild=%t}", n.pattern, n.part, n.isWild)
 }
 
 func (n *node) insert(pattern string, parts []string, height int) {
@@ -73,4 +59,23 @@ func (n *node) travel(list *[]*node) {
 	for _, child := range n.children {
 		child.travel(list)
 	}
+}
+
+func (n *node) matchChild(part string) *node {
+	for _, child := range n.children {
+		if child.part == part || child.isWild {
+			return child
+		}
+	}
+	return nil
+}
+
+func (n *node) matchChildren(part string) []*node {
+	nodes := make([]*node, 0)
+	for _, child := range n.children {
+		if child.part == part || child.isWild {
+			nodes = append(nodes, child)
+		}
+	}
+	return nodes
 }
